@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoRecolecta - Gestión de Residuos Domésticos</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-recycle"></i>
+                <span>EcoRecolecta</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="#home" class="nav-link active" data-section="home">Inicio</a>
+                <a href="#schedule" class="nav-link" data-section="schedule">Programar Recolección</a>
+                <a href="#reports" class="nav-link" data-section="reports">Mis Reportes</a>
+                <a href="#profile" class="nav-link" data-section="profile">Mi Perfil</a>
+                <a href="#login" class="nav-link" data-section="login" id="loginLink">Iniciar Sesión</a>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="hero">
+                <div class="hero-content">
+                    <h1>Gestión Inteligente de Residuos Domésticos</h1>
+                    <p>Únete a la revolución del reciclaje. Programa tus recolecciones, acumula puntos y contribuye al medio ambiente.</p>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <i class="fas fa-users"></i>
+                            <span id="totalUsers">0</span>
+                            <label>Usuarios Activos</label>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-recycle"></i>
+                            <span id="totalCollections">0</span>
+                            <label>Recolecciones</label>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-leaf"></i>
+                            <span id="totalPoints">0</span>
+                            <label>Puntos Canjeados</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="features">
+                <h2>Tipos de Residuos que Recolectamos</h2>
+                <div class="features-grid">
+                    <div class="feature-card organic">
+                        <i class="fas fa-seedling"></i>
+                        <h3>Residuos Orgánicos</h3>
+                        <p>Fracción orgánica, vegetal y residuos de poda. Recolección semanal programada.</p>
+                        <ul>
+                            <li>Restos de cocina</li>
+                            <li>Residuos vegetales</li>
+                            <li>Residuos de poda</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card inorganic">
+                        <i class="fas fa-recycle"></i>
+                        <h3>Residuos Inorgánicos</h3>
+                        <p>Papel, cartón, plásticos, vidrio y metales. Recolección 1-2 veces por semana.</p>
+                        <ul>
+                            <li>Papel y cartón</li>
+                            <li>Plásticos</li>
+                            <li>Vidrio y metales</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card dangerous">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Residuos Peligrosos</h3>
+                        <p>Baterías, pilas, aceites usados. Recolección mensual especializada.</p>
+                        <ul>
+                            <li>Baterías y pilas</li>
+                            <li>Aceites usados</li>
+                            <li>Productos químicos</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login/Register Section -->
+        <section id="login" class="section">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button class="tab-btn active" data-tab="login">Iniciar Sesión</button>
+                    <button class="tab-btn" data-tab="register">Registrarse</button>
+                </div>
+                
+                <!-- Login Form -->
+                <div id="loginForm" class="auth-form active">
+                    <h2>Iniciar Sesión</h2>
+                    <form id="loginFormElement">
+                        <div class="form-group">
+                            <label for="loginEmail">Correo Electrónico</label>
+                            <input type="email" id="loginEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Contraseña</label>
+                            <input type="password" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                    </form>
+                </div>
+
+                <!-- Register Form -->
+                <div id="registerForm" class="auth-form">
+                    <h2>Crear Cuenta</h2>
+                    <form id="registerFormElement">
+                        <div class="form-group">
+                            <label for="registerName">Nombre Completo</label>
+                            <input type="text" id="registerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail">Correo Electrónico</label>
+                            <input type="email" id="registerEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPhone">Teléfono</label>
+                            <input type="tel" id="registerPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerAddress">Dirección</label>
+                            <textarea id="registerAddress" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerNeighborhood">Localidad</label>
+                            <select id="registerNeighborhood" required>
+                                <option value="">Seleccionar localidad</option>
+                                <option value="norte">Norte</option>
+                                <option value="sur">Sur</option>
+                                <option value="oriente">Oriente</option>
+                                <option value="occidente">Occidente</option>
+                                <option value="centro">Centro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword">Contraseña</label>
+                            <input type="password" id="registerPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Registrarse</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Schedule Collection Section -->
+        <section id="schedule" class="section">
+            <div class="container">
+                <h2>Programar Recolección</h2>
+                <div class="schedule-form">
+                    <form id="scheduleForm">
+                        <div class="form-group">
+                            <label for="wasteType">Tipo de Residuo</label>
+                            <select id="wasteType" required>
+                                <option value="">Seleccionar tipo</option>
+                                <option value="organic">Residuos Orgánicos</option>
+                                <option value="inorganic">Residuos Inorgánicos Reciclables</option>
+                                <option value="dangerous">Residuos Peligrosos</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="collectionType">Tipo de Recolección</label>
+                            <select id="collectionType" required>
+                                <option value="">Seleccionar tipo</option>
+                                <option value="scheduled">Programada</option>
+                                <option value="on-demand">Por Demanda</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="collectionDate">Fecha de Recolección</label>
+                            <input type="date" id="collectionDate" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="collectionTime">Hora Preferida</label>
+                            <select id="collectionTime" required>
+                                <option value="">Seleccionar hora</option>
+                                <option value="08:00">8:00 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="14:00">2:00 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes">Notas Adicionales</label>
+                            <textarea id="notes" rows="3" placeholder="Información adicional sobre los residuos..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Programar Recolección</button>
+                    </form>
+                </div>
+                
+                <div class="scheduled-collections">
+                    <h3>Recolecciones Programadas</h3>
+                    <div id="collectionsList" class="collections-list">
+                        <!-- Collections will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reports Section -->
+        <section id="reports" class="section">
+            <div class="container">
+                <h2>Mis Reportes</h2>
+                <div class="reports-filters">
+                    <div class="form-group">
+                        <label for="reportStartDate">Fecha Inicio</label>
+                        <input type="date" id="reportStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="reportEndDate">Fecha Fin</label>
+                        <input type="date" id="reportEndDate">
+                    </div>
+                    <button id="generateReport" class="btn btn-secondary">Generar Reporte</button>
+                </div>
+                
+                <div class="user-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-recycle"></i>
+                        <div class="stat-info">
+                            <h3 id="totalCollectionsUser">0</h3>
+                            <p>Total Recolecciones</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-weight-hanging"></i>
+                        <div class="stat-info">
+                            <h3 id="totalWeightUser">0 kg</h3>
+                            <p>Peso Total</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-star"></i>
+                        <div class="stat-info">
+                            <h3 id="totalPointsUser">0</h3>
+                            <p>Puntos Acumulados</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reports-table">
+                    <h3>Historial de Recolecciones</h3>
+                    <table id="reportsTable">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Peso (kg)</th>
+                                <th>Puntos</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profile" class="section">
+            <div class="container">
+                <h2>Mi Perfil</h2>
+                <div class="profile-content">
+                    <div class="profile-info">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="profile-details">
+                            <h3 id="userName">Usuario</h3>
+                            <p id="userEmail">usuario@email.com</p>
+                            <p id="userPhone">+57 300 000 0000</p>
+                            <p id="userAddress">Dirección del usuario</p>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-stats">
+                        <h3>Estadísticas</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Recolecciones Totales:</span>
+                                <span class="stat-value" id="profileTotalCollections">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Puntos Acumulados:</span>
+                                <span class="stat-value" id="profileTotalPoints">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Peso Total Reciclado:</span>
+                                <span class="stat-value" id="profileTotalWeight">0 kg</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Notification System -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/observer.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/collections.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
