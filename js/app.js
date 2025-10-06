@@ -1,10 +1,10 @@
-/* EcoRecolecta - Navegación + Auth */
+/* EcoRecolecta - Navegación + Auth + Recolecciones + Reportes */
 document.addEventListener('DOMContentLoaded', function () {
-  // Helpers
+  /* ================= Helpers ================= */
   function $(sel){ return document.querySelector(sel); }
   function $all(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); }
 
-  // Store (LocalStorage)
+  /* ================= Store (LocalStorage) ================= */
   var K = { users:'users', session:'session' };
   function get(k, def){ var v = localStorage.getItem(k); return v ? JSON.parse(v) : (def || []); }
   function set(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
@@ -17,38 +17,28 @@ document.addEventListener('DOMContentLoaded', function () {
     end: function(){ localStorage.removeItem(K.session); }
   };
 
-  // Mostrar/ocultar secciones por display
+  /* ================= Navegación (mostrar/ocultar secciones) ================= */
   var sections = $all('.section');
   function showSection(id){
     sections.forEach(function(s){ s.style.display = (s.id === id ? 'block' : 'none'); });
-    // marcar link activo
     $all('.nav-link').forEach(function(a){
-      if (a.dataset.section === id) a.classList.add('active');
-      else a.classList.remove('active');
+      a.classList.toggle('active', a.dataset.section === id);
     });
     window.scrollTo(0,0);
-    console.log('-> sección:', id);
   }
-  // estado inicial
   var initial = 'home';
   sections.forEach(function(s){ if(s.classList.contains('active')) initial = s.id; });
   showSection(initial);
 
-  // Menú superior
   $all('.nav-link').forEach(function(a){
     a.addEventListener('click', function(e){
       e.preventDefault();
       var id = a.dataset.section;
       if(!id) return;
       var s = Store.session();
-      // Si hay sesión y hacen clic en "login", se interpreta como logout
-      if (id === 'login' && s){
-        doLogout();
-        return;
-      }
+      if (id === 'login' && s){ doLogout(); return; } // si hay sesión: logout
       showSection(id);
-      // Si abren login, asegurar pestaña de "Iniciar Sesión"
-      if(id === 'login'){
+      if(id === 'login'){ // asegurar pestaña de "Iniciar Sesión"
         var loginBtn = document.querySelector('.auth-tabs .tab-btn[data-tab="login"]');
         var registerBtn = document.querySelector('.auth-tabs .tab-btn[data-tab="register"]');
         if(loginBtn) loginBtn.classList.add('active');
@@ -60,13 +50,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Cambiar texto del link según sesión
   function setLoggedUI(logged){
     var link = $('#loginLink');
     if(link) link.textContent = logged ? 'Cerrar Sesión' : 'Iniciar Sesión';
   }
 
-  // Pestañas de login/registro
+  /* ================= Pestañas Login/Registro ================= */
   (function wireAuthTabs(){
     var tabs = $all('.auth-tabs .tab-btn');
     if(!tabs.length) return;
@@ -82,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   })();
 
-  // Registro
+  /* ================= Registro ================= */
   (function wireRegister(){
     var f = $('#registerFormElement'); if(!f) return;
     f.addEventListener('submit', function(e){
@@ -100,14 +89,13 @@ document.addEventListener('DOMContentLoaded', function () {
       Store.addUser(u);
       alert('Cuenta creada. Ahora inicia sesión.');
       f.reset();
-      // Cambiar a pestaña login y mostrar sección login
       var loginBtn = document.querySelector('.auth-tabs .tab-btn[data-tab="login"]');
       if(loginBtn) loginBtn.click();
       showSection('login');
     });
   })();
 
-  // Login
+  /* ================= Login ================= */
   (function wireLogin(){
     var f = $('#loginFormElement'); if(!f) return;
     f.addEventListener('submit', function(e){
@@ -119,32 +107,133 @@ document.addEventListener('DOMContentLoaded', function () {
       Store.start(email);
       setLoggedUI(true);
       paintProfile();
-      showSection('schedule'); 
+      showSection('schedule');
     });
   })();
 
-  // Logout (el propio enlace de login actúa como logout si hay sesión)
+  /* ================= Logout ================= */
   function doLogout(){
     Store.end();
     setLoggedUI(false);
     showSection('home');
   }
 
-  // Perfil
+  /* ==================== Recolecciones / Reportes ==================== */
+  var COL_KEY = 'collections';
+  var PT_KEY  = 'points';
+  function getList(k){ var v = localStorage.getItem(k); return v ? JSON.parse(v) : []; }
+  function saveList(k,a){ localStorage.setItem(k, JSON.stringify(a)); }
+
+  function calcPoints(type){
+    if(type==='organic')   return 5;
+    if(type==='inorganic') return 8;
+    if(type==='dangerous') return 15;
+    return 0;
+  }
+
+  function paintCollections(){
+    var box = document.getElementById('collectionsList');
+    if(!box) return;
+    var s = Store.session();
+    if(!s){ box.innerHTML = '<p>Inicia sesión para ver tus recolecciones.</p>'; return; }
+    var cols = getList(COL_KEY).filter(function(c){ return c.email===s.email; });
+    if(!cols.length){ box.innerHTML = '<p>Aún no tienes recolecciones programadas.</p>'; return; }
+    box.innerHTML = cols.map(function(c){
+      return '<div class="collection-card"><strong>'+c.date+'</strong> - '+c.type+' ('+c.mode+') - '+c.status+'</div>';
+    }).join('');
+  }
+
+  var scheduleForm = document.getElementById('scheduleForm');
+  if(scheduleForm){
+    scheduleForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      var s = Store.session();
+      if(!s){ alert('Inicia sesión primero'); return; }
+
+      var type = document.getElementById('wasteType').value;
+      var mode = document.getElementById('collectionType').value;
+      var date = document.getElementById('collectionDate').value;
+      var time = document.getElementById('collectionTime').value;
+      if(!type || !mode || !date || !time){ alert('Completa todos los campos'); return; }
+
+      var cols = getList(COL_KEY);
+      cols.push({
+        id: Date.now(), email: s.email, type: type, mode: mode,
+        date: date, time: time, status: 'Programada'
+      });
+      saveList(COL_KEY, cols);
+
+      var pts = getList(PT_KEY);
+      pts.push({ email: s.email, puntos: calcPoints(type), fecha: date });
+      saveList(PT_KEY, pts);
+
+      alert('✅ Recolección programada');
+      scheduleForm.reset();
+      paintCollections();
+      paintReports();
+      paintProfile();
+    });
+  }
+
+  function paintReports(){
+    var s = Store.session(); if(!s) return;
+    var pts  = getList(PT_KEY).filter(function(p){ return p.email===s.email; });
+    var cols = getList(COL_KEY).filter(function(c){ return c.email===s.email; });
+
+    var totalCols = cols.length;
+    var totalPts  = pts.reduce(function(n,p){ return n+p.puntos; }, 0);
+    var pesoTotal = cols.length;
+
+    var tCols = document.getElementById('totalCollectionsUser');
+    var tPts  = document.getElementById('totalPointsUser');
+    var tPeso = document.getElementById('totalWeightUser');
+    if(tCols) tCols.textContent = totalCols;
+    if(tPts)  tPts.textContent  = totalPts;
+    if(tPeso) tPeso.textContent = pesoTotal + ' kg';
+
+    var body = document.getElementById('reportsTableBody');
+    if(body){
+      body.innerHTML = cols.map(function(c){
+        var p = calcPoints(c.type);
+        return '<tr><td>'+c.date+'</td><td>'+c.type+'</td><td>1</td><td>'+p+'</td><td>'+c.status+'</td></tr>';
+      }).join('') || '<tr><td colspan="5">Sin datos.</td></tr>';
+    }
+  }
+
+  /* ====== ÚNICA función de perfil (datos personales + estadísticas) ====== */
   function paintProfile(){
     var s = Store.session(); if(!s) return;
     var u = Store.users().find(function(x){ return x.email===s.email; }); if(!u) return;
-    if($('#userName'))   $('#userName').innerText = u.name || 'Usuario';
-    if($('#userEmail'))  $('#userEmail').innerText = u.email || '';
-    if($('#userPhone'))  $('#userPhone').innerText = u.phone || '';
-    if($('#userAddress'))$('#userAddress').innerText = u.address || '';
+
+    // Panel izquierdo (datos personales)
+    if($('#userName'))    $('#userName').innerText    = u.name || 'Usuario';
+    if($('#userEmail'))   $('#userEmail').innerText   = u.email || '';
+    if($('#userPhone'))   $('#userPhone').innerText   = u.phone || '';
+    if($('#userAddress')) $('#userAddress').innerText = u.address || '';
+
+    // Panel derecho (estadísticas)
+    var pts  = getList(PT_KEY).filter(function(p){ return p.email===s.email; });
+    var cols = getList(COL_KEY).filter(function(c){ return c.email===s.email; });
+    var totalCols = cols.length;
+    var totalPts  = pts.reduce(function(n,p){ return n+p.puntos; }, 0);
+    var pesoTotal = cols.length; // simulado
+
+    if($('#profileTotalCollections')) $('#profileTotalCollections').innerText = totalCols;
+    if($('#profileTotalPoints'))      $('#profileTotalPoints').innerText      = totalPts;
+    if($('#profileTotalWeight'))      $('#profileTotalWeight').innerText      = pesoTotal + ' kg';
   }
 
-  // Estado inicial
+  /* ================= Botón de reporte ================= */
+  var btnReport = document.getElementById('generateReport');
+  if(btnReport) btnReport.addEventListener('click', paintReports);
+
+  /* ================= Estado inicial ================= */
   (function init(){
     var s = Store.session();
     setLoggedUI(!!s);
     if(s){ paintProfile(); }
-    console.log('✅ js/app.js listo');
+    paintCollections();
+    paintReports();
+    console.log('✅ js/app.js');
   })();
 });
